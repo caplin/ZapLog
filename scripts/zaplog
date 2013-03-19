@@ -1,0 +1,5 @@
+#!/bin/sh
+
+DIR=`dirname $0`
+
+java -jar -Xmx1024m $DIR/zaplog.jar $@
