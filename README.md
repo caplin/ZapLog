@@ -1,4 +1,1 @@
-ZapLog
-======
-
-Command Line Log Tool
+ZapLog is now officially maintained at https://github.com/caplin/ZapLog
