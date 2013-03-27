@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.caplin.zaplog.Log;
-import com.caplin.zaplog.Utils;
+import com.caplin.zaplog.ZapUtils;
 import com.caplin.zaplog.ZapLog;
 import com.caplin.zaplog.report.plugins.IPlugin;
 import com.caplin.zaplog.report.plugins.exceptions.PluginExceptions;
@@ -48,7 +48,7 @@ public class Report
 		sb.append(ZapLog.NEW_LINE);
 		sb.append("*************************************************");
 
-		return Utils.addHashes(sb.toString());
+		return ZapUtils.addHashes(sb.toString());
 	}
 
 }

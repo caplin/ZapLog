@@ -27,7 +27,7 @@ public class Header
 	{
 		if (!ZapArg.NO_HEADER)
 		{
-			System.out.println(Utils.addHashes(text));
+			System.out.println(ZapUtils.addHashes(text));
 		}
 	}
 

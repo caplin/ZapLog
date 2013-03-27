@@ -6,7 +6,7 @@ import org.fusesource.jansi.AnsiConsole;
 
 import com.caplin.zaplog.color.ColorManager;
 
-public class Utils
+public class ZapUtils
 {
 
 	private static void printlnPretty(String text)

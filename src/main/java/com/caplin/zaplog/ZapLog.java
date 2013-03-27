@@ -48,7 +48,7 @@ public class ZapLog
 		{
 			public void run()
 			{
-				if (Utils.isPrettyAndNoOutput())
+				if (ZapUtils.isPrettyAndNoOutput())
 				{
 					AnsiConsole.out.println(ColorManager.NORMAL);
 				}
@@ -309,11 +309,11 @@ public class ZapLog
 			{
 				if (ZapArg.CHRONOLOGICAL)
 				{
-					Utils.printLogLines(getLogOutputChronologically(logs));
+					ZapUtils.printLogLines(getLogOutputChronologically(logs));
 				}
 				else
 				{
-					Utils.printLogLines(getLogLines());
+					ZapUtils.printLogLines(getLogLines());
 				}
 			}
 		}
