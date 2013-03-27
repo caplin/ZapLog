@@ -160,5 +160,10 @@
 			<artifactId>jansi</artifactId>
 			<version>1.9</version>
 		</dependency>
+		<dependency>
+			<groupId>com.caplin</groupId>
+			<artifactId>zaplog-plugin</artifactId>
+			<version>0.40</version>
+		</dependency>
 	</dependencies>
 </project>
