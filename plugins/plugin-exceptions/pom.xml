@@ -7,6 +7,11 @@
 	<version>0.0.1-SNAPSHOT</version>
 
 	<build>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+			</resource>
+		</resources>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -19,5 +24,13 @@
 			</plugin>
 		</plugins>
 	</build>
+
+	<dependencies>
+		<dependency>
+			<groupId>com.caplin</groupId>
+			<artifactId>zaplog-plugin</artifactId>
+			<version>0.40</version>
+		</dependency>
+	</dependencies>
 
 </project>
