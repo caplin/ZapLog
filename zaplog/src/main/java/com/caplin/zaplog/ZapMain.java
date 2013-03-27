@@ -18,7 +18,7 @@ import com.caplin.zaplog.color.ColorManager;
 
 public class ZapMain
 {
-	
+
 	public static PrintStream oldOut;
 	private static File outputFile;
 	private static PrintStream fileStream;
@@ -111,7 +111,7 @@ public class ZapMain
 			}
 		});
 	}
-	
+
 	public static void close()
 	{
 		if (outputFile != null && !ZapArg.TAIL)
@@ -120,5 +120,5 @@ public class ZapMain
 			IOUtils.closeQuietly(fileStream);
 		}
 	}
-	
+
 }

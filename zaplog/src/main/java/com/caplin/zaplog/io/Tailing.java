@@ -9,8 +9,8 @@ import java.util.concurrent.Executors;
 import org.apache.commons.io.input.Tailer;
 import org.apache.commons.io.input.TailerListener;
 
-import com.caplin.zaplog.Log;
-import com.caplin.zaplog.LogLine;
+import com.caplin.zaplog.LogImpl;
+import com.caplin.zaplog.LogLineImpl;
 import com.caplin.zaplog.LogLineComparator;
 
 public class Tailing
@@ -18,9 +18,9 @@ public class Tailing
 
 	private ExecutorService executor;
 	private static final int DELAY = 10;
-	private List<Log> logs;
+	private List<LogImpl> logs;
 
-	public Tailing(List<Log> logs)
+	public Tailing(List<LogImpl> logs)
 	{
 		this.logs = logs;
 		this.executor = Executors.newFixedThreadPool(logs.size());
@@ -28,17 +28,17 @@ public class Tailing
 
 	public void start()
 	{
-		for (Log log : logs)
+		for (LogImpl log : logs)
 		{
 			TailerListener listener = new MyTailerListener(log);
 			executor.execute(new Tailer(log.getFile(), listener, DELAY, false, false));
 		}
 	}
 
-	public synchronized List<LogLine> getNewLogLines()
+	public synchronized List<LogLineImpl> getNewLogLines()
 	{
-		List<LogLine> newLogLines = new ArrayList<LogLine>();
-		for (Log log : logs)
+		List<LogLineImpl> newLogLines = new ArrayList<LogLineImpl>();
+		for (LogImpl log : logs)
 		{
 			newLogLines.addAll(log.getNewLogLines());
 			log.clearNewLogLines();

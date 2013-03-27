@@ -14,7 +14,7 @@ public class ExceptionDescription
 		this.logLine = logLine;
 		this.extraInfo = extraInfo;
 	}
-	
+
 	public ExceptionDescription(LogLine logLine)
 	{
 		this(logLine, "");

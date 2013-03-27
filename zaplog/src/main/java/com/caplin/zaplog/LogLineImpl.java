@@ -3,7 +3,7 @@ package com.caplin.zaplog;
 import org.joda.time.DateTime;
 import org.joda.time.Instant;
 
-public class LogLine
+public class LogLineImpl implements LogLine
 {
 	private DateTime date;
 	private String text;
@@ -12,7 +12,7 @@ public class LogLine
 	private String textColor;
 	private Log log;
 
-	public LogLine(Log log, String fileName, long lineNumber, DateTime date, String text, String textColor)
+	public LogLineImpl(Log log, String fileName, long lineNumber, DateTime date, String text, String textColor)
 	{
 		super();
 		this.log = log;

@@ -5,13 +5,24 @@ import java.util.List;
 
 import com.caplin.zaplog.Log;
 import com.caplin.zaplog.ZapLog;
-import com.caplin.zaplog.report.plugins.IPlugin;
+import com.caplin.zaplog.plugin.ZapPlugin;
 
-public class PluginExceptions implements IPlugin
+public class PluginExceptions implements ZapPlugin
 {
 
 	private List<ExceptionDescription> exceptionDescriptions;
 	private List<IException> exceptions;
+
+	@Override
+	public String getName()
+	{
+		return "Plugin Exceptions";
+	}
+
+	@Override
+	public void init()
+	{
+	}
 
 	public PluginExceptions()
 	{

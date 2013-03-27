@@ -3,13 +3,13 @@ package com.caplin.zaplog.io;
 import org.apache.commons.io.input.Tailer;
 import org.apache.commons.io.input.TailerListenerAdapter;
 
-import com.caplin.zaplog.Log;
+import com.caplin.zaplog.LogImpl;
 
 public class MyTailerListener extends TailerListenerAdapter
 {
-	private Log log;
+	private LogImpl log;
 
-	public MyTailerListener(Log log)
+	public MyTailerListener(LogImpl log)
 	{
 		this.log = log;
 	}

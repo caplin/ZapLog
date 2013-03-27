@@ -17,7 +17,7 @@ public class Header
 	{
 		this.inputOptions = convertArgsToOptionsString(inputArgs);
 	}
-	
+
 	public void println(String text)
 	{
 		if (!ZapArg.NO_HEADER)
@@ -33,7 +33,7 @@ public class Header
 		println(" ZapLog Options: " + inputOptions);
 		println("");
 	}
-	
+
 	public void printReport(Report report)
 	{
 		if (ZapArg.AUDIT && !ZapArg.TAIL)
@@ -41,12 +41,12 @@ public class Header
 			println(report.getText());
 		}
 	}
-	
+
 	public void endHeader()
 	{
 		println("###########################################################");
 	}
-	
+
 	public void startLogCap()
 	{
 		String version = getClass().getPackage().getImplementationVersion();

@@ -26,14 +26,14 @@ public class ZapLog
 	public static long MAX_FILE_LINE_LENGTH = -1;
 
 	private ExecutorService logParserService;
-	private List<Log> logs;
+	private List<LogImpl> logs;
 	private Header header;
 	private Report report;
 	private Tailing tailing;
 
 	public ZapLog(String[] inputArgs)
 	{
-		this.logs = new ArrayList<Log>();
+		this.logs = new ArrayList<LogImpl>();
 		this.header = new Header(inputArgs);
 		this.report = new Report();
 		this.logParserService = Executors.newFixedThreadPool(4);
@@ -72,7 +72,7 @@ public class ZapLog
 					result.add(" \t" + logFilePath);
 					if (logFilePath.length() > 0)
 					{
-						logs.add(new Log(logFilePath, report));
+						logs.add(new LogImpl(logFilePath, report));
 					}
 				}
 			}
@@ -98,7 +98,7 @@ public class ZapLog
 
 	private void initLogs()
 	{
-		for (Log log : logs)
+		for (LogImpl log : logs)
 		{
 			log.init();
 		}
@@ -159,7 +159,7 @@ public class ZapLog
 					@Override
 					public void run()
 					{
-						for (LogLine logLine : tailing.getNewLogLines())
+						for (LogLineImpl logLine : tailing.getNewLogLines())
 						{
 							System.out.println(logLine.getOutput());
 						}
@@ -184,7 +184,7 @@ public class ZapLog
 	{
 		List<LogLine> result = new ArrayList<LogLine>();
 
-		for (Log log : logs)
+		for (LogImpl log : logs)
 		{
 			result.addAll(log.getLogLines());
 		}
@@ -192,11 +192,11 @@ public class ZapLog
 		return result;
 	}
 
-	private List<LogLine> getLogOutputChronologically(List<Log> logs)
+	private List<LogLine> getLogOutputChronologically(List<LogImpl> logs)
 	{
 		List<LogLine> result = new ArrayList<LogLine>();
 
-		for (Log log : logs)
+		for (LogImpl log : logs)
 		{
 			result.addAll(log.getLogLines());
 		}

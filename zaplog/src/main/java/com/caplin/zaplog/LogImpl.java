@@ -14,12 +14,12 @@ import com.caplin.zaplog.report.Report;
 import com.caplin.zaplog.time.CTimestamp;
 import com.caplin.zaplog.time.DateText;
 
-public class Log implements Runnable
+public class LogImpl implements Runnable, Log
 {
 
 	private static final int MAX_FORMAT_LENGTH = 20;
 	private List<LogLine> lineList;
-	private List<LogLine> newLineList;
+	private List<LogLineImpl> newLineList;
 	private File logFile;
 	private String textColor;
 	private String fileName;
@@ -28,12 +28,12 @@ public class Log implements Runnable
 	private Report report;
 	private CTimestamp timestamp;
 
-	public Log(File logFile, Report report)
+	public LogImpl(File logFile, Report report)
 	{
 		this.report = report;
 		this.logFile = logFile;
 		this.lineList = new ArrayList<LogLine>();
-		this.newLineList = new ArrayList<LogLine>();
+		this.newLineList = new ArrayList<LogLineImpl>();
 		this.textColor = ColorManager.getTextColor(logFile);
 		this.timestamp = new CTimestamp();
 	}
@@ -99,7 +99,7 @@ public class Log implements Runnable
 		}
 	}
 
-	public LogLine textToLogLine(String fileName, long lineNumber, DateTime date, String text)
+	public LogLineImpl textToLogLine(String fileName, long lineNumber, DateTime date, String text)
 	{
 		DateText dateText = timestamp.getDate(text);
 		if (dateText.getDate() != null)
@@ -108,11 +108,11 @@ public class Log implements Runnable
 			currentDateTime = date;
 		}
 
-		return new LogLine(this, fileName, lineNumber, date, dateText.getText(), textColor);
+		return new LogLineImpl(this, fileName, lineNumber, date, dateText.getText(), textColor);
 	}
 
 	private List<String> getLogLines(File logFile) throws Exception
-	{			
+	{
 		return FileUtils.readLines(logFile, "UTF-8");
 	}
 
@@ -193,7 +193,7 @@ public class Log implements Runnable
 		}
 	}
 
-	public List<LogLine> getNewLogLines()
+	public List<LogLineImpl> getNewLogLines()
 	{
 		synchronized (newLineList)
 		{

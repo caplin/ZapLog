@@ -5,14 +5,25 @@ import java.util.Locale;
 
 import com.caplin.zaplog.Log;
 import com.caplin.zaplog.ZapLog;
-import com.caplin.zaplog.report.plugins.IPlugin;
+import com.caplin.zaplog.plugin.ZapPlugin;
 
-public class PluginStats implements IPlugin
+public class PluginStats implements ZapPlugin
 {
 
 	private int totalLines = 0;
 	private int totalLogFiles = 0;
 	private long startTime;
+
+	@Override
+	public String getName()
+	{
+		return "Plugin Statistics";
+	}
+
+	@Override
+	public void init()
+	{
+	}
 
 	@Override
 	public void addLog(Log log)

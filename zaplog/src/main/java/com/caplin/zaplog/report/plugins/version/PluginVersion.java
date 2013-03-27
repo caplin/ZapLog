@@ -8,9 +8,9 @@ import org.apache.commons.lang.StringUtils;
 
 import com.caplin.zaplog.Log;
 import com.caplin.zaplog.ZapLog;
-import com.caplin.zaplog.report.plugins.IPlugin;
+import com.caplin.zaplog.plugin.ZapPlugin;
 
-public class PluginVersion implements IPlugin
+public class PluginVersion implements ZapPlugin
 {
 
 	private List<Version> productInfos;
@@ -19,6 +19,17 @@ public class PluginVersion implements IPlugin
 	private ProductComparator productComparator;
 
 	private int MAX_PRODUCT_NAME_LENGTH = 0;
+
+	@Override
+	public String getName()
+	{
+		return "Plugin Version";
+	}
+
+	@Override
+	public void init()
+	{
+	}
 
 	public PluginVersion()
 	{
