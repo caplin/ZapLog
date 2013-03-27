@@ -183,7 +183,7 @@ public class ZapLog
 
 	private void addLogs()
 	{
-		header.println(" Adding Logs Files:");
+		List<String> result = new ArrayList<String>();
 		for (String logPath : ZapArg.INPUT_LOGS)
 		{
 			try
@@ -195,7 +195,7 @@ public class ZapLog
 					{
 						ZapLog.MAX_FILE_NAME_LENGTH = logFilePath.getName().length();
 					}
-					header.println(" \t" + logFilePath);
+					result.add(" \t" + logFilePath);
 					if (logFilePath.length() > 0)
 					{
 						logs.add(new Log(logFilePath, report));
@@ -209,7 +209,16 @@ public class ZapLog
 		}
 		if (logs.size() == 0)
 		{
-			header.println(" \t No Logs Found!");
+			result.add(0, " No Logs Found!");
+		}
+		else
+		{
+			result.add(0, " Adding " + logs.size() + " Log Files:");
+		}
+		
+		for (String text : result)
+		{
+			header.println(text);
 		}
 	}
 
