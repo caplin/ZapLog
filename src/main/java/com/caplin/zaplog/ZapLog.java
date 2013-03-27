@@ -39,6 +39,9 @@ public class ZapLog
 		this.logParserService = Executors.newFixedThreadPool(4);
 	}
 
+	/**
+	 * Init/Report Section
+	 */
 	public void init()
 	{
 		header.startHeader();
@@ -52,34 +55,6 @@ public class ZapLog
 		header.endHeader();
 	}
 
-	private void disableTailingIfNoLogs()
-	{
-		if (logs.size() == 0)
-		{
-			ZapArg.TAIL = false;
-		}
-	}
-
-	private void readLogsOrTail()
-	{
-		if (!ZapArg.TAIL)
-		{
-			readLogs();
-		}
-		else
-		{
-			this.tailing = new Tailing(logs);
-		}
-	}
-
-	private void initLogs()
-	{
-		for (Log log : logs)
-		{
-			log.init();
-		}
-	}
-	
 	private void addLogs()
 	{
 		List<String> result = new ArrayList<String>();
@@ -121,6 +96,90 @@ public class ZapLog
 		}
 	}
 
+	private void initLogs()
+	{
+		for (Log log : logs)
+		{
+			log.init();
+		}
+	}
+
+	private void disableTailingIfNoLogs()
+	{
+		if (logs.size() == 0)
+		{
+			ZapArg.TAIL = false;
+		}
+	}
+
+	private void readLogsOrTail()
+	{
+		if (!ZapArg.TAIL)
+		{
+			readLogs();
+		}
+		else
+		{
+			this.tailing = new Tailing(logs);
+		}
+	}
+
+	private void readLogs()
+	{
+		List<Callable<Object>> callables = new ArrayList<Callable<Object>>();
+		for (Runnable logRunnable : logs)
+		{
+			Callable<Object> c = Executors.callable(logRunnable);
+			callables.add(c);
+		}
+		try
+		{
+			logParserService.invokeAll(callables);
+			logParserService.shutdown();
+		}
+		catch (InterruptedException e)
+		{
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * Output Section
+	 */
+	public void printOutput()
+	{
+		if (!ZapArg.NO_LOG_OUTPUT)
+		{
+			if (ZapArg.TAIL)
+			{
+				tailing.start();
+
+				new Timer().schedule(new TimerTask()
+				{
+					@Override
+					public void run()
+					{
+						for (LogLine logLine : tailing.getNewLogLines())
+						{
+							System.out.println(logLine.getOutput());
+						}
+					}
+				}, 0, 1500);
+			}
+			else
+			{
+				if (ZapArg.CHRONOLOGICAL)
+				{
+					ZapUtils.printLogLines(getLogOutputChronologically(logs));
+				}
+				else
+				{
+					ZapUtils.printLogLines(getLogLines());
+				}
+			}
+		}
+	}
+
 	public List<LogLine> getLogLines()
 	{
 		List<LogLine> result = new ArrayList<LogLine>();
@@ -159,59 +218,6 @@ public class ZapLog
 		result.addAll(0, noDateLines);
 
 		return result;
-	}
-
-	public void printOutput()
-	{
-		if (!ZapArg.NO_LOG_OUTPUT)
-		{
-			if (ZapArg.TAIL)
-			{
-				tailing.start();
-
-				new Timer().schedule(new TimerTask()
-				{
-					@Override
-					public void run()
-					{
-						for (LogLine logLine : tailing.getNewLogLines())
-						{
-							System.out.println(logLine.getOutput());
-						}
-					}
-				}, 0, 1500);
-			}
-			else
-			{
-				if (ZapArg.CHRONOLOGICAL)
-				{
-					ZapUtils.printLogLines(getLogOutputChronologically(logs));
-				}
-				else
-				{
-					ZapUtils.printLogLines(getLogLines());
-				}
-			}
-		}
-	}
-
-	private void readLogs()
-	{
-		List<Callable<Object>> callables = new ArrayList<Callable<Object>>();
-		for (Runnable logRunnable : logs)
-		{
-			Callable<Object> c = Executors.callable(logRunnable);
-			callables.add(c);
-		}
-		try
-		{
-			logParserService.invokeAll(callables);
-			logParserService.shutdown();
-		}
-		catch (InterruptedException e)
-		{
-			e.printStackTrace();
-		}
 	}
 
 }
