@@ -1,7 +1,6 @@
 package com.caplin.zaplog;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
@@ -44,12 +43,12 @@ public class ZapLog
 		JCommander jc = new JCommander(new ZapArg());
 		final Scanner s = new Scanner(System.in);
 		final ZapLog zapLog = new ZapLog(args);
-
+		
 		Runtime.getRuntime().addShutdownHook(new Thread()
 		{
 			public void run()
 			{
-				if (ZapArg.PRETTY)
+				if (Utils.isPrettyAndNoOutput())
 				{
 					AnsiConsole.out.println(ColorManager.NORMAL);
 				}
@@ -76,8 +75,9 @@ public class ZapLog
 
 			if (ZapArg.OUTPUT_FILE != null)
 			{
-				File outputFile = zapLog.createOutputFile();
-				System.setOut(zapLog.setPipeOut(outputFile));
+				outputFile = new File(ZapArg.OUTPUT_FILE);
+				fileStream = new PrintStream(new FileOutputStream(outputFile));
+				System.setOut(fileStream);
 
 				zapLog.init();
 				zapLog.printOutput();
@@ -122,13 +122,13 @@ public class ZapLog
 	}
 
 	private List<Log> logs;
-	private PrintStream pipeOut;
 	private PrintStream oldOut = System.out;
 	private Header header;
 	private Report report;
 	private Tailing tailing;
 
-	private File outputFile;
+	private static File outputFile;
+	private static PrintStream fileStream;
 
 	public ZapLog(String[] args)
 	{
@@ -155,17 +155,6 @@ public class ZapLog
 			sb.append("NONE");
 		}
 		return sb.toString();
-	}
-
-	private File createOutputFile()
-	{
-		outputFile = new File(ZapArg.OUTPUT_FILE);
-		return outputFile;
-	}
-
-	public File getOutputFile()
-	{
-		return outputFile;
 	}
 
 	public void init()
@@ -245,8 +234,9 @@ public class ZapLog
 	{
 		if (outputFile != null)
 		{
-			safeSystemOut("Output File Created: " + outputFile.getAbsolutePath());
-			IOUtils.closeQuietly(this.pipeOut);
+			System.setOut(getOldOut());
+			System.out.println("Output File Created: " + outputFile.getAbsolutePath());
+			IOUtils.closeQuietly(fileStream);
 		}
 	}
 
@@ -293,11 +283,6 @@ public class ZapLog
 	public PrintStream getOldOut()
 	{
 		return this.oldOut;
-	}
-
-	public PrintStream getPipeOut()
-	{
-		return this.pipeOut;
 	}
 
 	private void printOutput()
@@ -351,25 +336,6 @@ public class ZapLog
 		{
 			e.printStackTrace();
 		}
-	}
-
-	private synchronized void safeSystemOut(String text)
-	{
-		synchronized (System.out)
-		{
-			System.setOut(getOldOut());
-			System.out.println(text);
-			System.setOut(getPipeOut());
-		}
-	}
-
-	private PrintStream setPipeOut(File outputFile) throws FileNotFoundException
-	{
-		if (outputFile != null)
-		{
-			this.pipeOut = new PrintStream(new FileOutputStream(outputFile));
-		}
-		return this.pipeOut;
 	}
 
 }

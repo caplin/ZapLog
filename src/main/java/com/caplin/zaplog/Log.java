@@ -181,13 +181,6 @@ public class Log implements Runnable
 		return logFile;
 	}
 
-	/*
-	 * private String getLogLine(String logLine) { if (isBinaryData(logLine)) { try { ByteArrayOutputStream
-	 * byteArrayOutputStream = new ByteArrayOutputStream(); PrintStream printStream = new
-	 * PrintStream(byteArrayOutputStream); JLogCat logCat = new JLogCat(new
-	 * DataInputStream(IOUtils.toInputStream(logLine)), printStream); logCat.go(); return new
-	 * String(byteArrayOutputStream.toString()); } catch (IOException e) { e.printStackTrace(); } } return logLine; }
-	 */
 	public void addNewLine(String logLine)
 	{
 		synchronized (newLineList)

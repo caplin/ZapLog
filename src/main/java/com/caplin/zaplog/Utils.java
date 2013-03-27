@@ -38,7 +38,7 @@ public class Utils
 		}
 	}
 
-	private static boolean isPrettyAndNoOutput()
+	public static boolean isPrettyAndNoOutput()
 	{
 		return ZapArg.PRETTY && ZapArg.OUTPUT_FILE == null;
 	}
