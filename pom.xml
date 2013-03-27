@@ -101,7 +101,7 @@
 							<jar>target/zaplog.jar</jar>
 							<errTitle>encc</errTitle>
 							<classPath>
-								<mainClass>com.caplin.zaplog.ZapLog</mainClass>
+								<mainClass>com.caplin.zaplog.ZapMain</mainClass>
 								<addDependencies>false</addDependencies>
 								<preCp>anything</preCp>
 							</classPath>
