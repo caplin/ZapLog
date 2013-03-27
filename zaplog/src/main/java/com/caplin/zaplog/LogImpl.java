@@ -10,7 +10,7 @@ import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 
 import com.caplin.zaplog.color.ColorManager;
-import com.caplin.zaplog.report.Report;
+import com.caplin.zaplog.plugin.Report;
 import com.caplin.zaplog.time.CTimestamp;
 import com.caplin.zaplog.time.DateText;
 

@@ -5,7 +5,7 @@ import org.joda.time.Instant;
 import org.joda.time.format.PeriodFormatter;
 import org.joda.time.format.PeriodFormatterBuilder;
 
-import com.caplin.zaplog.report.Report;
+import com.caplin.zaplog.plugin.Report;
 
 public class Header
 {

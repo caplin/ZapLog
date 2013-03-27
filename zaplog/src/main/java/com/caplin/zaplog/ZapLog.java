@@ -15,7 +15,7 @@ import java.util.regex.Pattern;
 
 import com.caplin.zaplog.io.Tailing;
 import com.caplin.zaplog.io.Walker;
-import com.caplin.zaplog.report.Report;
+import com.caplin.zaplog.plugin.Report;
 
 public class ZapLog
 {

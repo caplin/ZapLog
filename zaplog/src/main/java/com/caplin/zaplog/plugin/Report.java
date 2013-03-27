@@ -1,4 +1,4 @@
-package com.caplin.zaplog.report;
+package com.caplin.zaplog.plugin;
 
 import java.util.ArrayList;
 import java.util.List;
