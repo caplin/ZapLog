@@ -62,7 +62,7 @@
 							</descriptors>
 							<archive>
 								<manifest>
-									<mainClass>com.caplin.zaplog.ZapLog</mainClass>
+									<mainClass>com.caplin.zaplog.ZapMain</mainClass>
 									<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
 									<addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
 								</manifest>
