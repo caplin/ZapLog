@@ -35,7 +35,7 @@ public class ZapLog
 	public static Pattern REGEX_PATTERN;
 	public static long MAX_FILE_NAME_LENGTH = -1;
 	public static long MAX_FILE_LINE_LENGTH = -1;
-	
+
 	private ExecutorService executorService;
 
 	public static void main(String[] args) throws IOException
@@ -43,36 +43,33 @@ public class ZapLog
 		JCommander jc = new JCommander(new ZapArg());
 		final Scanner inputScanner = new Scanner(System.in);
 		final ZapLog zaplog = new ZapLog(args);
-		
+
 		addShutdownHook(inputScanner, zaplog);
 
 		try
 		{
 			jc.parse(args);
-
 			if (ZapArg.REGEX != null)
 			{
 				ZapLog.REGEX_PATTERN = Pattern.compile(ZapArg.REGEX);
 			}
-
 			if (ZapArg.OUTPUT_FILE != null)
 			{
 				outputFile = new File(ZapArg.OUTPUT_FILE);
 				fileStream = new PrintStream(new FileOutputStream(outputFile));
 				System.setOut(fileStream);
-
-				zaplog.init();
-				zaplog.printOutput();
-				if (!ZapArg.TAIL)
-				{
-					zaplog.closeOutputFile();
-				}
 			}
-			else
+
+			// Start ZapLog
+			if (ZapUtils.isPrettyAndNoOutput())
 			{
 				AnsiConsole.systemInstall();
-				zaplog.init();
-				zaplog.printOutput();
+			}
+			zaplog.init();
+			zaplog.printOutput();
+			zaplog.close();
+			if (ZapUtils.isPrettyAndNoOutput())
+			{
 				AnsiConsole.systemUninstall();
 			}
 		}
@@ -216,9 +213,9 @@ public class ZapLog
 		}
 	}
 
-	private void closeOutputFile()
+	private void close()
 	{
-		if (outputFile != null)
+		if (outputFile != null && !ZapArg.TAIL)
 		{
 			System.setOut(getOldOut());
 			System.out.println("Output File Created: " + outputFile.getAbsolutePath());
