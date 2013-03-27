@@ -35,6 +35,12 @@ public class ZapLog
 	public static Pattern REGEX_PATTERN;
 	public static long MAX_FILE_NAME_LENGTH = -1;
 	public static long MAX_FILE_LINE_LENGTH = -1;
+	public static PrintStream oldOut;
+
+	static
+	{
+		ZapLog.oldOut = System.out;
+	}
 
 	private ExecutorService executorService;
 
@@ -100,7 +106,7 @@ public class ZapLog
 		}
 	}
 
-	private static void addShutdownHook(final Scanner s, final ZapLog zapLog)
+	private static void addShutdownHook(final Scanner inputScanner, final ZapLog zapLog)
 	{
 		Runtime.getRuntime().addShutdownHook(new Thread()
 		{
@@ -112,8 +118,7 @@ public class ZapLog
 				}
 				try
 				{
-					IOUtils.closeQuietly(zapLog.getOldOut());
-					s.close();
+					inputScanner.close();
 				}
 				catch (Exception e)
 				{
@@ -124,7 +129,6 @@ public class ZapLog
 	}
 
 	private List<Log> logs;
-	private PrintStream oldOut = System.out;
 	private Header header;
 	private Report report;
 	private Tailing tailing;
@@ -180,7 +184,7 @@ public class ZapLog
 			log.init();
 		}
 	}
-
+	
 	private void addLogs()
 	{
 		List<String> result = new ArrayList<String>();
@@ -215,7 +219,7 @@ public class ZapLog
 		{
 			result.add(0, " Adding " + logs.size() + " Log Files:");
 		}
-		
+
 		for (String text : result)
 		{
 			header.println(text);
@@ -226,8 +230,7 @@ public class ZapLog
 	{
 		if (outputFile != null && !ZapArg.TAIL)
 		{
-			System.setOut(getOldOut());
-			System.out.println("Output File Created: " + outputFile.getAbsolutePath());
+			oldOut.println("Output File Created: " + outputFile.getAbsolutePath());
 			IOUtils.closeQuietly(fileStream);
 		}
 	}
@@ -270,11 +273,6 @@ public class ZapLog
 		result.addAll(0, noDateLines);
 
 		return result;
-	}
-
-	public PrintStream getOldOut()
-	{
-		return this.oldOut;
 	}
 
 	private void printOutput()
