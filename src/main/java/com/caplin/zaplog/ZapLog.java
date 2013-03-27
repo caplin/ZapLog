@@ -1,14 +1,10 @@
 package com.caplin.zaplog;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Scanner;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -16,14 +12,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
 
-import org.apache.commons.io.IOUtils;
-import org.fusesource.jansi.AnsiConsole;
-
-import com.beust.jcommander.JCommander;
-import com.beust.jcommander.ParameterException;
-import com.caplin.zaplog.color.ColorManager;
 import com.caplin.zaplog.io.Tailing;
 import com.caplin.zaplog.io.Walker;
 import com.caplin.zaplog.report.Report;
@@ -35,113 +24,19 @@ public class ZapLog
 	public static Pattern REGEX_PATTERN;
 	public static long MAX_FILE_NAME_LENGTH = -1;
 	public static long MAX_FILE_LINE_LENGTH = -1;
-	public static PrintStream oldOut;
 
-	static
-	{
-		ZapLog.oldOut = System.out;
-	}
-
-	private ExecutorService executorService;
-
-	public static void main(String[] args) throws IOException
-	{
-		JCommander jc = new JCommander(new ZapArg());
-		final Scanner inputScanner = new Scanner(System.in);
-		final ZapLog zaplog = new ZapLog(args);
-
-		addShutdownHook(inputScanner, zaplog);
-
-		try
-		{
-			jc.parse(args);
-			if (ZapArg.REGEX != null)
-			{
-				ZapLog.REGEX_PATTERN = Pattern.compile(ZapArg.REGEX);
-			}
-			if (ZapArg.OUTPUT_FILE != null)
-			{
-				outputFile = new File(ZapArg.OUTPUT_FILE);
-				fileStream = new PrintStream(new FileOutputStream(outputFile));
-				System.setOut(fileStream);
-			}
-
-			// Start ZapLog
-			if (ZapUtils.isPrettyAndNoOutput())
-			{
-				AnsiConsole.systemInstall();
-			}
-			zaplog.init();
-			zaplog.printOutput();
-			zaplog.close();
-			if (ZapUtils.isPrettyAndNoOutput())
-			{
-				AnsiConsole.systemUninstall();
-			}
-		}
-		catch (PatternSyntaxException e)
-		{
-			System.err.println("Invalid Regex: " + e.getMessage());
-			jc.usage();
-		}
-		catch (ParameterException e)
-		{
-			System.err.println(e.getMessage());
-			jc.usage();
-
-			if (jc.getParsedAlias() == null)
-			{
-				try
-				{
-					System.out.println("Press any key to continue...");
-					inputScanner.nextLine();
-				}
-				catch (NoSuchElementException e2)
-				{
-					// do nothing
-				}
-				inputScanner.close();
-				return;
-			}
-		}
-	}
-
-	private static void addShutdownHook(final Scanner inputScanner, final ZapLog zapLog)
-	{
-		Runtime.getRuntime().addShutdownHook(new Thread()
-		{
-			public void run()
-			{
-				if (ZapUtils.isPrettyAndNoOutput())
-				{
-					AnsiConsole.out.println(ColorManager.NORMAL);
-				}
-				try
-				{
-					inputScanner.close();
-				}
-				catch (Exception e)
-				{
-					// do nothing
-				}
-			}
-		});
-	}
-
+	private ExecutorService logParserService;
 	private List<Log> logs;
 	private Header header;
 	private Report report;
 	private Tailing tailing;
-
-	private static File outputFile;
-	private static PrintStream fileStream;
 
 	public ZapLog(String[] inputArgs)
 	{
 		this.logs = new ArrayList<Log>();
 		this.header = new Header(inputArgs);
 		this.report = new Report();
-		this.executorService = Executors.newFixedThreadPool(4);
+		this.logParserService = Executors.newFixedThreadPool(4);
 	}
 
 	public void init()
@@ -226,15 +121,6 @@ public class ZapLog
 		}
 	}
 
-	private void close()
-	{
-		if (outputFile != null && !ZapArg.TAIL)
-		{
-			oldOut.println("Output File Created: " + outputFile.getAbsolutePath());
-			IOUtils.closeQuietly(fileStream);
-		}
-	}
-
 	public List<LogLine> getLogLines()
 	{
 		List<LogLine> result = new ArrayList<LogLine>();
@@ -275,7 +161,7 @@ public class ZapLog
 		return result;
 	}
 
-	private void printOutput()
+	public void printOutput()
 	{
 		if (!ZapArg.NO_LOG_OUTPUT)
 		{
@@ -319,8 +205,8 @@ public class ZapLog
 		}
 		try
 		{
-			executorService.invokeAll(callables);
-			executorService.shutdown();
+			logParserService.invokeAll(callables);
+			logParserService.shutdown();
 		}
 		catch (InterruptedException e)
 		{
