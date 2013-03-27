@@ -41,9 +41,70 @@ public class ZapLog
 	public static void main(String[] args) throws IOException
 	{
 		JCommander jc = new JCommander(new ZapArg());
-		final Scanner s = new Scanner(System.in);
-		final ZapLog zapLog = new ZapLog(args);
+		final Scanner inputScanner = new Scanner(System.in);
+		final ZapLog zaplog = new ZapLog(args);
 		
+		addShutdownHook(inputScanner, zaplog);
+
+		try
+		{
+			jc.parse(args);
+
+			if (ZapArg.REGEX != null)
+			{
+				ZapLog.REGEX_PATTERN = Pattern.compile(ZapArg.REGEX);
+			}
+
+			if (ZapArg.OUTPUT_FILE != null)
+			{
+				outputFile = new File(ZapArg.OUTPUT_FILE);
+				fileStream = new PrintStream(new FileOutputStream(outputFile));
+				System.setOut(fileStream);
+
+				zaplog.init();
+				zaplog.printOutput();
+				if (!ZapArg.TAIL)
+				{
+					zaplog.closeOutputFile();
+				}
+			}
+			else
+			{
+				AnsiConsole.systemInstall();
+				zaplog.init();
+				zaplog.printOutput();
+				AnsiConsole.systemUninstall();
+			}
+		}
+		catch (PatternSyntaxException e)
+		{
+			System.err.println("Invalid Regex: " + e.getMessage());
+			jc.usage();
+		}
+		catch (ParameterException e)
+		{
+			System.err.println(e.getMessage());
+			jc.usage();
+
+			if (jc.getParsedAlias() == null)
+			{
+				try
+				{
+					System.out.println("Press any key to continue...");
+					inputScanner.nextLine();
+				}
+				catch (NoSuchElementException e2)
+				{
+					// do nothing
+				}
+				inputScanner.close();
+				return;
+			}
+		}
+	}
+
+	private static void addShutdownHook(final Scanner s, final ZapLog zapLog)
+	{
 		Runtime.getRuntime().addShutdownHook(new Thread()
 		{
 			public void run()
@@ -63,62 +124,6 @@ public class ZapLog
 				}
 			}
 		});
-
-		try
-		{
-			jc.parse(args);
-
-			if (ZapArg.REGEX != null)
-			{
-				ZapLog.REGEX_PATTERN = Pattern.compile(ZapArg.REGEX);
-			}
-
-			if (ZapArg.OUTPUT_FILE != null)
-			{
-				outputFile = new File(ZapArg.OUTPUT_FILE);
-				fileStream = new PrintStream(new FileOutputStream(outputFile));
-				System.setOut(fileStream);
-
-				zapLog.init();
-				zapLog.printOutput();
-				if (!ZapArg.TAIL)
-				{
-					zapLog.closeOutputFile();
-				}
-			}
-			else
-			{
-				AnsiConsole.systemInstall();
-				zapLog.init();
-				zapLog.printOutput();
-				AnsiConsole.systemUninstall();
-			}
-		}
-		catch (PatternSyntaxException e)
-		{
-			System.err.println("Invalid Regex: " + e.getMessage());
-			jc.usage();
-		}
-		catch (ParameterException e)
-		{
-			System.err.println(e.getMessage());
-			jc.usage();
-
-			if (jc.getParsedAlias() == null)
-			{
-				try
-				{
-					System.out.println("Press any key to continue...");
-					s.nextLine();
-				}
-				catch (NoSuchElementException e2)
-				{
-					// do nothing
-				}
-				s.close();
-				return;
-			}
-		}
 	}
 
 	private List<Log> logs;
@@ -130,31 +135,12 @@ public class ZapLog
 	private static File outputFile;
 	private static PrintStream fileStream;
 
-	public ZapLog(String[] args)
+	public ZapLog(String[] inputArgs)
 	{
 		this.logs = new ArrayList<Log>();
-		this.header = new Header(convertArgsToOptionsString(args));
+		this.header = new Header(inputArgs);
 		this.report = new Report();
 		this.executorService = Executors.newFixedThreadPool(4);
-	}
-
-	private String convertArgsToOptionsString(String[] args)
-	{
-		StringBuilder sb = new StringBuilder();
-		for (int i = 0; i < args.length; i++)
-		{
-			String arg = args[i];
-			if (arg.startsWith("-"))
-			{
-				sb.append(arg);
-				sb.append(" ");
-			}
-		}
-		if (sb.toString().length() == 0)
-		{
-			sb.append("NONE");
-		}
-		return sb.toString();
 	}
 
 	public void init()

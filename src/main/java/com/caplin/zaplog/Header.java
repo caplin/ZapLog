@@ -13,16 +13,11 @@ public class Header
 	private Instant startTime;
 	private String inputOptions;
 
-	public Header(String inputOptions)
+	public Header(String[] inputArgs)
 	{
-		this.inputOptions = inputOptions;
+		this.inputOptions = convertArgsToOptionsString(inputArgs);
 	}
-
-	public void endHeader()
-	{
-		println("###########################################################");
-	}
-
+	
 	public void println(String text)
 	{
 		if (!ZapArg.NO_HEADER)
@@ -38,23 +33,20 @@ public class Header
 		println(" ZapLog Options: " + inputOptions);
 		println("");
 	}
-
-	private void addLogo()
+	
+	public void printReport(Report report)
 	{
-		if (ZapArg.LOGO)
+		if (ZapArg.AUDIT && !ZapArg.TAIL)
 		{
-			println("  _____                 __               ");
-			println(" / _  /  __ _  _ __    / /   ___    __ _ ");
-			println(" \\// /  / _` || '_ \\  / /   / _ \\  / _` |");
-			println("  / //\\| (_| || |_) |/ /___| (_) || (_| |");
-			println(" /____/ \\__,_|| .__/ \\____/ \\___/  \\__, |");
-			println("              |_|                  |___/ ");
-			println("");
-			println(" -... -.--    -. .. -.-. -.-    -");
-			println("");
+			println(report.getText());
 		}
 	}
-
+	
+	public void endHeader()
+	{
+		println("###########################################################");
+	}
+	
 	public void startLogCap()
 	{
 		String version = getClass().getPackage().getImplementationVersion();
@@ -74,6 +66,25 @@ public class Header
 		println(" ZapLog Time: " + duration.toPeriod().toString(formatter));
 	}
 
+	/**
+	 * Helper Methods
+	 */
+	private void addLogo()
+	{
+		if (ZapArg.LOGO)
+		{
+			println("  _____                 __               ");
+			println(" / _  /  __ _  _ __    / /   ___    __ _ ");
+			println(" \\// /  / _` || '_ \\  / /   / _ \\  / _` |");
+			println("  / //\\| (_| || |_) |/ /___| (_) || (_| |");
+			println(" /____/ \\__,_|| .__/ \\____/ \\___/  \\__, |");
+			println("              |_|                  |___/ ");
+			println("");
+			println(" -... -.--    -. .. -.-. -.-    -");
+			println("");
+		}
+	}
+
 	private PeriodFormatter getPeriodFormatter()
 	{
 		PeriodFormatter formatter = new PeriodFormatterBuilder().appendDays().appendSuffix(" day", " days")
@@ -84,12 +95,23 @@ public class Header
 		return formatter;
 	}
 
-	public void printReport(Report report)
+	private static String convertArgsToOptionsString(String[] args)
 	{
-		if (ZapArg.AUDIT && !ZapArg.TAIL)
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < args.length; i++)
 		{
-			println(report.getText());
+			String arg = args[i];
+			if (arg.startsWith("-"))
+			{
+				sb.append(arg);
+				sb.append(" ");
+			}
 		}
+		if (sb.toString().length() == 0)
+		{
+			sb.append("NONE");
+		}
+		return sb.toString();
 	}
 
 }
