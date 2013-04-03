@@ -15,4 +15,6 @@ public interface LogLine
 
 	long getLineNumber();
 
+	void setText(String newLogLine);
+
 }
