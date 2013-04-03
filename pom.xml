@@ -16,6 +16,7 @@
 		<module>plugins/plugin-exceptions</module>
 		<module>plugins/plugin-stats</module>
 		<module>plugins/plugin-version</module>
+		<module>plugins/plugin-logcat</module>
 	</modules>
 
 </project>

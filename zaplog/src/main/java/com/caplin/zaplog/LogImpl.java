@@ -68,8 +68,7 @@ public class LogImpl implements Runnable, Log
 
 				if ((containsStrings(logLine) || containsRegex(logLine)) && !containsNoStrings(logLine))
 				{
-					currentLineNumber++;
-					lineList.add(textToLogLine(fileName, i + 1, currentDateTime, logLine));
+					addLogLine(logLine);
 				}
 			}
 		}
@@ -171,14 +170,30 @@ public class LogImpl implements Runnable, Log
 		return false;
 	}
 
+	@Override
 	public List<LogLine> getLogLines()
 	{
 		return lineList;
 	}
 
+	@Override
 	public File getFile()
 	{
 		return logFile;
+	}
+	
+	@Override
+	public void clearLogLines()
+	{
+		currentLineNumber = 0;
+		lineList.clear();
+	}
+
+	@Override
+	public void addLogLine(String logLine)
+	{
+		currentLineNumber++;
+		lineList.add(textToLogLine(fileName, currentLineNumber, currentDateTime, logLine));
 	}
 
 	public void addNewLine(String logLine)

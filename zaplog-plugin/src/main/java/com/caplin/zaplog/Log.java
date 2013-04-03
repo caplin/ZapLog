@@ -9,5 +9,9 @@ public interface Log
 	List<LogLine> getLogLines();
 
 	File getFile();
+	
+	void clearLogLines();
+	
+	void addLogLine(String logLine);
 
 }
