@@ -5,6 +5,10 @@
 .checkstyle
 .prefs
 
+#Intellij
+*.iml
+.idea/
+
 *.class
 .classpath
 .project
