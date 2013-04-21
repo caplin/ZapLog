@@ -1,19 +1,18 @@
 package com.caplin.zaplog.plugin;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-
 import com.caplin.zaplog.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.*;
+import java.net.URLDecoder;
 
 public class PluginLogCat implements ZapPlugin
 {
 
 	public static final String NEW_LINE = System.getProperty("line.separator");
+
+    private Logger logger = LoggerFactory.getLogger(PluginLogCat.class);
 
 	@Override
 	public String getName()
@@ -21,13 +20,23 @@ public class PluginLogCat implements ZapPlugin
 		return "Plugin LogCat";
 	}
 
-	@Override
-	public void init()
-	{
-		
-	}
+    @Override
+    public void init() {
+        try {
+            File logcatExe = getLogcatExe();
+            if (logcatExe.exists()) {
+                logger.info("Successfully loaded logcat at: {}", logcatExe.getAbsolutePath());
+            }
+            else {
+                logger.error("Could not find logcat exe at: {}", logcatExe.getAbsolutePath());
+            }
+        }
+        catch (UnsupportedEncodingException e) {
+            logger.error("Exception: {}", e);
+        }
+    }
 
-	@Override
+    @Override
 	public void addLog(Log log)
 	{
 		try
@@ -36,11 +45,9 @@ public class PluginLogCat implements ZapPlugin
 			{
 				log.clearLogLines();
 
-				File file = new File(getLogcatDirectory().getAbsolutePath() + "/logcat.exe");
-				String[] cmd = { file.getAbsolutePath(), log.getFile().getAbsolutePath() };
-				Process p = Runtime.getRuntime().exec(cmd);
+                InputStream inputStream = getInputStream(log);
 
-				BufferedReader input = new BufferedReader(new InputStreamReader(p.getInputStream()));
+                BufferedReader input = new BufferedReader(new InputStreamReader(inputStream));
 				String logLine = null;
 				while ((logLine = input.readLine()) != null)
 				{
@@ -53,8 +60,19 @@ public class PluginLogCat implements ZapPlugin
 			e.printStackTrace();
 		}
 	}
-	
-	public File getLogcatDirectory() throws UnsupportedEncodingException
+
+    private InputStream getInputStream(Log log) throws IOException {
+        File file = getLogcatExe();
+        String[] cmd = { file.getAbsolutePath(), log.getFile().getAbsolutePath() };
+        Process p = Runtime.getRuntime().exec(cmd);
+        return p.getInputStream();
+    }
+
+    private File getLogcatExe() throws UnsupportedEncodingException {
+        return new File(getLogcatDirectory().getAbsolutePath() + "/logcat.exe");
+    }
+
+    public File getLogcatDirectory() throws UnsupportedEncodingException
 	{
 		File directory = new File("logcat");
 		if (!directory.exists())
@@ -94,8 +112,8 @@ public class PluginLogCat implements ZapPlugin
 
 	private boolean isBinaryData(String s)
 	{
-		String s2 = s.replaceAll("[a-zA-Z0-9ßöäü\\.\\*!\"§\\$\\%&/()=\\?@~'#:,;\\"
-				+ "+><\\|\\[\\]\\{\\}\\^°²³\\\\ \\n\\r\\t_\\-`´âêîô" + "ÂÊÔÎáéíóàèìòÁÉÍÓÀÈÌÒ©‰¢£¥€±¿»«¼½¾™ª]", "");
+		String s2 = s.replaceAll("[a-zA-Z0-9ï¿½ï¿½ï¿½ï¿½\\.\\*!\"ï¿½\\$\\%&/()=\\?@~'#:,;\\"
+				+ "+><\\|\\[\\]\\{\\}\\^ï¿½ï¿½ï¿½\\\\ \\n\\r\\t_\\-`ï¿½ï¿½ï¿½ï¿½ï¿½" + "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò©ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½]", "");
 
 		double d = (double) (s.length() - s2.length()) / (double) (s.length());
 		return !(d > 0.95);
