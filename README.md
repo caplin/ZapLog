@@ -1,9 +1,8 @@
-#ZapLog
+ZapLog
 ======
 Command Line Log Tool written in Java.
 
 ##Usage
-=====
 Parameter | Description
 --- | ---
 `-a, -audit` | includes report from plugins
@@ -23,7 +22,6 @@ Parameter | Description
 
 
 ##Examples
-========
 ####Basic
  ```
  ./zaplog var/mylog1.log logs/mylog2.log 
