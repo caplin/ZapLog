@@ -17,9 +17,9 @@ Parameter | Description
 `-o, -output` | output to file
 `-p, -pretty` | (Linux) enables colors for different log files 
 `-r` | recursively finds logs in folders
-`regex` | filter log lines by regex
-`s` | filter log lines by strings
-`tail` | (Experiemental) tails the output
+`-regex` | filter log lines by regex
+`-s` | filter log lines by strings
+`-tail` | (Experiemental) tails the output
 
 
 ##Examples
